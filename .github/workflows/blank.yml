@@ -19,8 +19,8 @@ jobs:
           threshold: 0
 
       - name: Upload Local Excel to GitHub
-        shell: cmd
-        run: |
-          gh run upload ${{ github.run_id }} "C:\Users\phani.yvn\ACCELQAgent_1\AgentInstances\agent\user_data\Test.xlsx"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: accelq-execution-report
+          # Note the single quotes and forward slashes for Windows paths in YAML
+          path: 'C:/Users/phani.yvn/ACCELQAgent_1/AgentInstances/agent/user_data/Test.xlsx'
