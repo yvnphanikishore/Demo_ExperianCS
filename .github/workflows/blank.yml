@@ -1,18 +1,12 @@
-name: ACCELQ Automation Run
-
-on:
-  push:
-    branches: [ "main" ]
+name: ACCELQ Local Artifact Push
+on: [push]
 
 jobs:
-  execute-tests:
+  trigger-accelq:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # Step 1: Trigger the ACCELQ CI Job
-      - name: Run ACCELQ Test
+      - name: Start ACCELQ Job
+        # This starts the test on your local agent
         uses: accelQ-Inc/accelq-ci-github-actions@v1.4
         with:
           appURL: 'https://app.accelq.io/'
@@ -23,14 +17,12 @@ jobs:
           # Optional: Use -1 to not fail the pipeline if tests fail
           threshold: 0 
 
-      # Step 2: Upload Artifacts
-      # Note: ACCELQ typically hosts reports on its own dashboard. 
-      # If your job downloads local logs/files, use this step:
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: accelq-execution-report
-          path: |
-            "C:\Users\phani.yvn\ACCELQAgent_1\AgentInstances\agent\user_data\Test.xlsx" # Adjust if you download files via CLI
-            **/reports/*.html
+      upload-local-file:
+    needs: trigger-accelq
+    runs-on: self-hosted # Run this part on your local Windows machine
+    steps:
+      - name: Upload Local Excel to GitHub 1
+        run: | 
+          gh run upload ${{ github.run_id }} "C:\Users\phani.yvn\ACCELQAgent_1\AgentInstances\agent\user_data\Test.xlsx"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
