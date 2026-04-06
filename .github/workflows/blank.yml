@@ -1,10 +1,13 @@
-name: ACCELQ Local Artifact Push
+name: ACCELQ Local Combined Job
 on: [push]
 
 jobs:
-  trigger-accelq:
-    runs-on: ubuntu-latest
+  accelq-test-and-upload:
+    runs-on: self-hosted  # Everything now runs on your local Windows machine
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - name: Start ACCELQ Job
         uses: accelQ-Inc/accelq-ci-github-actions@v1.4
         with:
@@ -15,12 +18,8 @@ jobs:
           jobId: '8852'
           threshold: 0
 
-  upload-local-file:
-    needs: trigger-accelq
-    runs-on: self-hosted
-    steps:
       - name: Upload Local Excel to GitHub
-        shell: cmd # Forces Windows Command Prompt to handle backslashes correctly
+        shell: cmd
         run: |
           gh run upload ${{ github.run_id }} "C:\Users\phani.yvn\ACCELQAgent_1\AgentInstances\agent\user_data\Test.xlsx"
         env:
