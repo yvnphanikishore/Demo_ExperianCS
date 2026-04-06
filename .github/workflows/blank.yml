@@ -6,23 +6,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Start ACCELQ Job
-        # This starts the test on your local agent
         uses: accelQ-Inc/accelq-ci-github-actions@v1.4
         with:
           appURL: 'https://app.accelq.io/'
           userName: "phani.yvn@aqsupport.com"
           apiKey: "7wkGaMKar3UOx_ut-n6LedUC9xH6FXHDJr87hPb8JXwaq"
           tenantCode: 'aqsupport'
-          jobId: '8852' # Replace with your Job ID
-          # Optional: Use -1 to not fail the pipeline if tests fail
-          threshold: 0 
+          jobId: '8852'
+          threshold: 0
 
-      upload-local-file:
+  upload-local-file:
     needs: trigger-accelq
-    runs-on: self-hosted # Run this part on your local Windows machine
+    runs-on: self-hosted
     steps:
-      - name: Upload Local Excel to GitHub 1
-        run: | 
+      - name: Upload Local Excel to GitHub
+        shell: cmd # Forces Windows Command Prompt to handle backslashes correctly
+        run: |
           gh run upload ${{ github.run_id }} "C:\Users\phani.yvn\ACCELQAgent_1\AgentInstances\agent\user_data\Test.xlsx"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
